@@ -5,6 +5,6 @@ python-multipart==0.0.9
 
 # Game deps
 opencv-python==4.10.0.84
-mediapipe==0.10.14
+mediapipe
 Pillow==10.4.0
 numpy==1.26.4
