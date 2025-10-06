@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ViMove • Play</title>
+  <link rel="stylesheet" href="/static/styles.css?v=4" />
+  <style>
+    #cam { width: 100%; max-width: 720px; background:#000; border-radius:16px; }
+    .actions { display:flex; gap:12px; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Exercise Demo</h1>
+    {% if last %}
+      <p class="muted">Profile: age {{ last.age }}, gender {{ last.gender }}, disease {{ last.disease }}</p>
+    {% endif %}
+
+    <div class="card">
+      <video id="cam" autoplay playsinline muted></video>
+      <canvas id="frame" class="hidden"></canvas>
+      <div class="actions">
+        <button id="start">Start Camera</button>
+        <button id="stop" class="danger">Stop Camera</button>
+      </div>
+      <div id="status" class="muted"></div>
+    </div>
+  </div>
+  <script src="/static/cam.js?v=4"></script>
+</body>
+</html>

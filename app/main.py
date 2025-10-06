@@ -9,6 +9,8 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+VIMOVE_MODE = os.getenv("VIMOVE_MODE", "client").lower()  # "client" varsayılan; Render için ideal
+
 
 app = FastAPI(title="NöroHareket App")
 
@@ -50,12 +52,17 @@ def is_running() -> bool:
     return False
 
 def launch_game():
+        if VIMOVE_MODE != "server":
+        # Render/client modunda server-side oyun başlatmayız; sadece PID dosyası olmadan no-op.
+         return
     # Launch the game in a separate process without blocking the web server
-    python_exe = sys.executable
-    proc = subprocess.Popen([python_exe, str(GAME_PATH)], cwd=str(BASE_DIR))
-    PID_FILE.write_text(str(proc.pid))
-
+        python_exe = sys.executable
+        proc = subprocess.Popen([python_exe, str(GAME_PATH)], cwd=str(BASE_DIR))
+        PID_FILE.write_text(str(proc.pid))
+  
 def stop_game():
+    if VIMOVE_MODE != "server":
+     return False
     if not PID_FILE.exists():
         return False
     try:
@@ -114,14 +121,26 @@ def start(
         return templates.TemplateResponse("error.html", {"request": request, "msg": "Cinsiyet seçeneklerinden birini seçiniz."}, status_code=400)
 
     DATA_FILE.write_text(json.dumps({"age": age, "gender": gender, "disease": disease}, ensure_ascii=False, indent=2))
-
-    if not is_running():
-        launch_game()
-        note = "The application has been launched."
+    if VIMOVE_MODE == "server":
+        if not is_running():
+            launch_game()
+            note = "The application has been launched."
+        else:
+            note = "Uygulama zaten çalışıyor."
+        return templates.TemplateResponse("started.html", {"request": request, "note": note})
     else:
-        note = "Uygulama zaten çalışıyor."
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/play", status_code=303)
+@app.get("/play", response_class=HTMLResponse)
+def play(request: Request):
+    last = None
+    if DATA_FILE.exists():
+        try:
+            last = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            last = None
+    return templates.TemplateResponse("play.html", {"request": request, "last": last})
 
-    return templates.TemplateResponse("started.html", {"request": request, "note": note})
 
 @app.post("/stop")
 def stop(request: Request):
