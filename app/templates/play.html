@@ -1,32 +1,31 @@
-<!DOCTYPE html>
-<html lang="tr">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ViMove • Play</title>
-  <link rel="stylesheet" href="/static/styles.css?v=4" />
-  <style>
-    #cam { width: 100%; max-width: 720px; background:#000; border-radius:16px; }
-    .actions { display:flex; gap:12px; margin-top:12px; }
-  </style>
+  <meta charset="utf-8" />
+  <title>Vimove – Oyun</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Exercise Demo</h1>
-    {% if last %}
-      <p class="muted">Profile: age {{ last.age }}, gender {{ last.gender }}, disease {{ last.disease }}</p>
-    {% endif %}
+  <main class="container">
+    <h1>Egzersiz Oyunu</h1>
 
-    <div class="card">
-      <video id="cam" autoplay playsinline muted></video>
-      <canvas id="frame" class="hidden"></canvas>
-      <div class="actions">
-        <button id="start">Start Camera</button>
-        <button id="stop" class="danger">Stop Camera</button>
-      </div>
-      <div id="status" class="muted"></div>
+    <div class="stack">
+      <video id="cam" autoplay playsinline muted width="640" height="480"></video>
+      <canvas id="overlay" width="640" height="480"></canvas>
     </div>
-  </div>
-  <script src="/static/cam.js?v=4"></script>
+
+    <div class="row">
+      <button id="btn-start">Oyunu Başlat</button>
+      <button id="btn-stop" disabled>Durdur</button>
+      <span class="stats">Skor: <span id="score">0</span></span>
+    </div>
+  </main>
+
+  <!-- Mediapipe Tasks (Pose) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js"></script>
+  <!-- İçerik sabitleri (JSON) -->
+  <script src="/static/js/content.js"></script>
+  <!-- Oyun motoru -->
+  <script src="/static/js/play.js"></script>
 </body>
 </html>
